@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body,html{
+        margin: 0px;
+        padding: 0px;
+    }
+    .container{
+        background-color: #ffe;
+        overflow: hidden;
+        margin: 0 auto;
+        margin-top: 40px;
+        width:700px;
+        height: 700px;
+        position: relative;
+    }
+    .container .chatInfo{
+        width: 500px;
+        height: 500px;
+        position: absolute;
+        background-color: #fff;
+        border:#000 1px solid;
+    }
+    .container .contacts{
+        width: 200px;
+        height: 698px;
+        background-color: #fff;
+        position: absolute;
+        right: 0px;
+        border:#000 1px solid;
+    }
+    .container .text{
+        width:497px;
+        height: 200px;
+        background-color: #fff;
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        border:#000 1px solid;
+
+    }
+    .text textarea{
+        outline:none;
+        resize:none;
+        }
+    .btn{
+        position: absolute;
+        right: 20px;
+    }
+    
+</style>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="chatInfo">
+                <ul>
+                    <li v-for="(v,k) in messageList">
+                        <p v-if="v.shou_id != 'all' ">{{v.u_name}}对{{v.s_name}}说{{v.message}}</p>
+                        <p v-else > {{v.u_name}}对所有人说{{v.message}} </p>
+                    </li>
+                 
+                </ul>
+            </div>
+            <div class="contacts">
+                <ul>
+                    <li v-for="(v,k) in userList">
+                        <p  v-if="k == id ">{{v}}(我)</p>
+                        <p @click="check(k)" v-else >{{v}}</p>
+                        
+                    </li>
+                    <p @click="sendall">发送给所有人</p>
+                </ul>
+            </div>
+            <div class="text">
+                <textarea style="width: 493px;height: 160px;border:none;" v-model="content"></textarea>
+                <input class="btn" type="button" @click="sends" value="发送">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el:'#app',
+        data:{
+            //用户列表
+            userList:[],
+            //消息列表
+            messageList:[],
+            //发送的内容
+            content:'',
+            //websocket对象
+            ws:null,
+            //本客户端的id
+            id:'',
+            //发消息人的name
+            user_name:'',
+            //群发还是私人
+            send:'',
+            //发消息的人
+            user_id:'',
+            // 收消息的人
+            shou_id:''
+
+        },
+            //首先取出jwt
+        created:function(){
+            let jwt_token = localStorage.getItem('jwt');
+            this.id = localStorage.getItem('id');
+            console.log('我的id'+this.id)
+            if(jwt_token==undefined){
+                location.href="login.html";
+            }else{
+                // console.log(1);
+                // 连接 websocket
+                this.ws = new WebSocket('ws://127.0.0.1:9999?jwt_token='+jwt_token);
+                this.ws.onopen = this.open;
+                this.ws.onmessage = this.message;
+                this.ws.error = this.error;
+
+            }
+        },
+        methods:{
+            // 发送信息
+            sends:function(){
+                if(this.send==''){
+                    this.ws.send('all:'+this.content)
+                    console.log(1231);
+                }else{
+                    this.ws.send(this.send+':'+this.content)
+                    console.log(this.send);
+                }
+                this.content = '';
+            },
+            error:function(){
+                location.href="login.html"
+            },
+            open:function(){
+                alert('连接成功')
+            },
+            message:function(e){
+                let data = JSON.parse(e.data);
+                if(data.type=='users'){
+                    this.userList = data.user
+                    console.log(this.userList)
+                }else{
+                    console.log(data)
+                    // this.show_id = data.show_id ? data.show_id : '';
+                    if(this.user_id != this.id){
+                        // console.log(this.user_id)
+                        this.messageList.push(data)
+                        console.log(this.messageList);
+                        // this.user_id = data.u_name
+                        // this.shou_id = data.s_name
+                    }
+                }
+            },
+            check:function(k){
+                this.send = k
+            },
+            sendall:function(){
+                this.send = '';
+            }
+
+        }
+    })
+</script>
