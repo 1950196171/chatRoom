@@ -1,10 +1,13 @@
+<h1>基于workerman的聊天室
+
 首先  启动php内置服务器 默认端口为9999
-
-​	php -S localhost:9999
-
+~~~php
+php -S localhost:9999·····
+~~~
 然后启动websocket服务
-
-​	php server.php start
+~~~php
+php server.php start
+~~~
 
 在dologin.php 中修改数据库的名称、用户名、密码
 
@@ -21,6 +24,6 @@
 
 
 
-功能更新
-新的github地址
-github.com/1950196171/chatRoom1.0
+<h1> 功能更新
+<h1> 新的github地址
+<h1> github.com/1950196171/chatRoom1.0
