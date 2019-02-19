@@ -1,10 +1,13 @@
-<h1>基于workerman的聊天室
+# 基于workerman的聊天室
 
-首先  启动php内置服务器 默认端口为9999
+
+ 首先  启动php内置服务器 默认端口为9999
 ~~~php
 php -S localhost:9999·····
 ~~~
+
 然后启动websocket服务
+
 ~~~php
 php server.php start
 ~~~
@@ -24,6 +27,6 @@ php server.php start
 
 
 
-<h1> 功能更新
-<h1> 新的github地址
-<h1> github.com/1950196171/chatRoom1.0
+# 功能更新
+# 新的github地址
+# github.com/1950196171/chatRoom1.0
